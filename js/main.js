@@ -19,8 +19,14 @@ function get(url) {
   })
 }
 
+function put(url, paylodad, callback) {
+  paylodad._method = 'PUT'
+  post(url, paylodad, callback)
+}
+
 function post(url, payload, callback) {
-  callback = callback || function() {}
+  callback = callback || function () {
+  }
   let ok = true
 
   console.log(url, payload)
@@ -48,20 +54,35 @@ function post(url, payload, callback) {
       callback(false)
     }
     else {
-      callback(true)
+      callback(true, data.data.resource)
     }
   })
 }
 
-get('partners')
+function remove(url, callback) {
+  fetch(urlPrefix + url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      _method: 'DELETE',
+    })
+  }).then(function (response) {
+    callback(true, response)
+  }).catch(function (e) {
+    console.log(e)
+  })
+}
 
 if (partnerId) {
   const partnerPromise = get('partners/' + partnerId)
-  const countriesPromise = get('master_data/countries?limit=1000')
-  const countiesPromise = get('master_data/counties?limit=1000')
-  const zipCodesPromise = get('master_data/zip_codes?limit=1000')
-  const citiesPromise = get('master_data/cities?limit=1000')
-  const countryCodesPromise = get('master_data/country_codes?limit=1000')
+  const countriesPromise = get('master_data/countries?limit=100')
+  const countiesPromise = get('master_data/counties?limit=100')
+  const zipCodesPromise = get('master_data/zip_codes?limit=100')
+  const citiesPromise = get('master_data/cities?limit=100')
+  const countryCodesPromise = get('master_data/country_codes?limit=100')
 
   Promise.all([
     partnerPromise,
@@ -82,7 +103,7 @@ if (partnerId) {
     document.getElementById('content').style.display = 'block'
     populatePartnerData()
 
-    ReactDOM.render(
+    /*ReactDOM.render(
       React.createElement(Addresses),
       document.getElementById('relations-addresses')
     )
@@ -100,14 +121,14 @@ if (partnerId) {
     ReactDOM.render(
       React.createElement(Website),
       document.getElementById('relations-website')
-    )
+    )*/
 
     ReactDOM.render(
       React.createElement(BankAccounts),
-      document.getElementById('bank_accounts')
+      document.getElementById('bank_accounts'),
     )
 
-    ReactDOM.render(
+    /*ReactDOM.render(
       React.createElement(Administrators),
       document.getElementById('administrators')
     )
@@ -120,7 +141,7 @@ if (partnerId) {
     ReactDOM.render(
       React.createElement(Company),
       document.getElementById('company')
-    )
+    )*/
   })
 }
 else {
@@ -161,9 +182,13 @@ function onPartnerDataFormSubmit(form) {
     payload.company_registration_number = form.elements['partner_data-company_registration_number'].value
   }
 
-  post('partners/' + partnerId, payload, function(success) {
-    if(success) {
+  post('partners/' + partnerId, payload, function (success) {
+    if (success) {
       alert('Partner sikeresen mentve.')
     }
   })
+}
+
+function uid() {
+  return Math.floor(Math.random() * 100000)
 }

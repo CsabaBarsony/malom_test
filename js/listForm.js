@@ -5,6 +5,13 @@ function ListFormField(type, key, title) {
 }
 
 const ListFormEdit = createReactClass({
+  getInitialState: function() {
+    return {
+      fields: this.props.fields,
+      item: this.props.item,
+    }
+  },
+
   renderInput: function(type, key, value) {
     const self = this
     let input
@@ -16,7 +23,17 @@ const ListFormEdit = createReactClass({
           type: 'text',
           value: value || '',
           onChange: function(e) {
-            self.props.onChange(self.props.index, key, e.target.value)
+            const value = e.target.value
+
+            self.setState(function(state) {
+              return update(state, {
+                item: {
+                  [key]: {
+                    $set: value,
+                  },
+                },
+              })
+            })
           },
         })
         break
@@ -25,11 +42,24 @@ const ListFormEdit = createReactClass({
         input = React.createElement('select', {
           value: value || false,
           onChange: function(e) {
-            self.props.onChange(self.props.index, key, e.target.value)
+            const value = e.target.value
+
+            self.setState(function(state) {
+              return update(state, {
+                item: {
+                  [key]: {
+                    $set: value,
+                  },
+                },
+              })
+            })
           },
-        }, masterData[key].map(function(option, index) {
-          return React.createElement('option', {key: index, value: option.id}, option.name)
-        }))
+        },
+          React.createElement('option'),
+          masterData[key].map(function(option, index) {
+            return React.createElement('option', {key: index, value: option.id}, option.name)
+          })
+        )
         break
 
       case 'checkbox':
@@ -39,7 +69,15 @@ const ListFormEdit = createReactClass({
           onChange: function(e) {
             const value = e.target.value === 'true'
 
-            self.props.onChange(self.props.index, key, value)
+            self.setState(function(state) {
+              return update(state, {
+                item: {
+                  [key]: {
+                    $set: value,
+                  },
+                },
+              })
+            })
           },
         },
           React.createElement('option', {value: true}, 'igen'),
@@ -56,8 +94,8 @@ const ListFormEdit = createReactClass({
   },
 
   render: function() {
-    const fields = this.props.fields || []
-    const item = this.props.item || {}
+    const fields = this.state.fields
+    const item = this.state.item
     const self = this
 
     return React.createElement('form', {
@@ -79,14 +117,14 @@ const ListFormEdit = createReactClass({
         className: 'btn',
         onClick: function(e) {
           e.preventDefault()
-          self.props.onSave(self.props.index)
+          self.props.onSave(self.state.item, self.props.index)
         },
-      }, 'Kész'),
+      }, 'Mentés'),
       React.createElement('button', {
         className: 'btn',
         onClick: function(e) {
           e.preventDefault()
-          self.props.onCancel(self.props.item._unsaved)
+          self.props.onCancel()
         },
       }, 'Mégse'),
     )
@@ -96,42 +134,24 @@ const ListFormEdit = createReactClass({
 const ListForm = createReactClass({
   getInitialState: function() {
     return {
-      selectedFieldIndex: null,
-      fields: this.props.fields || [],
-      items: this.props.items || [],
+      selectedItemIndex: null,
+      fields: this.props.fields,
+      items: this.props.items,
     }
   },
 
   onEditButtonClick: function(index) {
     this.setState(function(state) {
       return update(state, {
-        selectedFieldIndex: {
+        selectedItemIndex: {
           $set: index,
         },
       })
     })
   },
 
-
-
-  onInputChange: function(index, key, value) {
-    this.setState(function(state) {
-      return update(state, {
-        items: {
-          [index]: {
-            [key]: {
-              $set: value,
-            },
-          },
-        },
-      })
-    })
-  },
-
   onAddItemButtonClick: function() {
-    let newItem = {
-      _unsaved: true,
-    }
+    let newItem = {}
 
     _.each(this.props.fields, function(field) {
       let value = ''
@@ -156,18 +176,8 @@ const ListForm = createReactClass({
         items: {
           $push: [newItem],
         },
-        selectedFieldIndex: {
+        selectedItemIndex: {
           $set: state.items.length,
-        },
-      })
-    })
-  },
-
-  onRemove: function(index) {
-    this.setState(function(state) {
-      return update(state, {
-        items: {
-          $splice: [[index, 1]],
         },
       })
     })
@@ -178,59 +188,23 @@ const ListForm = createReactClass({
     const items = this.state.items
     const self = this
 
-    const listFormEdit = this.state.selectedFieldIndex !== null && React.createElement(ListFormEdit, {
+    const listFormEdit = this.state.selectedItemIndex !== null && React.createElement(ListFormEdit, {
         fields: fields,
-        item: items[this.state.selectedFieldIndex],
-        index: this.state.selectedFieldIndex,
+        item: items[this.state.selectedItemIndex],
+        index: this.state.selectedItemIndex,
         onChange: self.onInputChange,
-        onCancel: function(isUnsaved, index) {
-          if(isUnsaved) {
-            self.setState(function(state) {
-              const result = update(state, {
-                selectedFieldIndex: {
-                  $set: null,
-                },
-                items: {
-                  $splice: [[state.selectedFieldIndex, 1]]
-                },
-              })
-
-              return result
-            })
-          }
-          else {
-            self.setState({selectedFieldIndex: null})
-          }
+        onCancel: function() {
+          self.setState({selectedItemIndex: null})
         },
-        onSave: function(index) {
-          self.setState(function(state) {
-            return update(state, {
-              selectedFieldIndex: {
-                $set: null,
-              },
-              items: {
-                [index]: {
-                  _unsaved: {
-                    $set: false,
-                  },
-                },
-              },
-            })
-          })
-        },
+        onSave: self.props.onSave,
       })
 
-    const addItemButton = this.state.selectedFieldIndex === null && React.createElement('button', {
+    const addItemButton = this.state.selectedItemIndex === null && React.createElement('button', {
       className: 'btn',
       onClick: self.onAddItemButtonClick,
     }, 'Elem hozzáadása')
 
-    const saveButton = this.state.selectedFieldIndex === null && React.createElement('button', {
-      className: 'btn',
-      onClick: function() {
-        console.log(self.state.items)
-      },
-    }, 'Mentés')
+    if(this.state.loading) return React.createElement('div', null, 'Kérem, várjon egy pillanatot!')
 
     return React.createElement('div', null,
       React.createElement('table', {className: 'table'},
@@ -239,13 +213,11 @@ const ListForm = createReactClass({
             fields.map(function(field, index) {
               return React.createElement('th', {key: index}, field.title)
             }),
-            self.state.selectedFieldIndex === null ? React.createElement('th', null, 'Műveletek') : null,
+            self.state.selectedItemIndex === null ? React.createElement('th', null, 'Műveletek') : null,
           ),
         ),
         React.createElement('tbody', null,
           items.map(function(item, index) {
-            if(item._unsaved) return null
-
             return React.createElement('tr', {key: index},
               fields.map(function(field, index) {
                 let value = null
@@ -268,7 +240,7 @@ const ListForm = createReactClass({
 
                 return React.createElement('td', {key: index}, value)
               }),
-              self.state.selectedFieldIndex === null ? React.createElement('td', null,
+              self.state.selectedItemIndex === null ? React.createElement('td', null,
                 React.createElement('button', {
                   className: 'btn',
                   onClick: function() {
@@ -278,7 +250,7 @@ const ListForm = createReactClass({
                 React.createElement('button', {
                   className: 'btn',
                   onClick: function() {
-                    self.onRemove(index)
+                    self.props.onRemove(item.id)
                   },
                 }, 'Törlés'),
               ) : null
@@ -287,7 +259,6 @@ const ListForm = createReactClass({
         ),
       ),
       addItemButton,
-      saveButton,
       listFormEdit,
     )
   }
