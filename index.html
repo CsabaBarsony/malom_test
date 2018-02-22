@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Partner Adatai</title>
+    <link rel="stylesheet" href="css/partners.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+</head>
+<body>
+<div id="loading">Adatok betöltése...</div>
+<div id="content">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" href="#partner_data" role="tab" data-toggle="tab">Partner adatai</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#relations" role="tab" data-toggle="tab">Kapcsolattartás</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#bank_accounts" role="tab" data-toggle="tab">Bankszámlák</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#administrators" role="tab" data-toggle="tab">Ügyintézők</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#partner_relations" role="tab" data-toggle="tab">Partner kapcsolatok</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#company" role="tab" data-toggle="tab">Társaság</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <!-- Partner adatai -->
+
+        <div class="tab-pane active" id="partner_data">
+            <form class="form-horizontal" onsubmit="event.preventDefault(); onPartnerDataFormSubmit(this);">
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group row">
+                            <label for="partner_data-short_name" class="col-6 col-form-label">Partner rövid neve:</label>
+                            <div class="col-6">
+                                <input type="text" id="partner_data-short_name">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="partner_data-long_name" class="col-6 col-form-label">Partner hosszú neve:</label>
+                            <div class="col-6">
+                                <input type="text" id="partner_data-long_name">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="partner_data-tax_number" class="col-6 col-form-label">Adószám:</label>
+                            <div class="col-6">
+                                <input type="text" id="partner_data-tax_number">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="partner_data-public_tax_number" class="col-6 col-form-label">Közösségi adószám:</label>
+                            <div class="col-6">
+                                <input type="text" id="partner_data-public_tax_number">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="partner_data-company_registration_number" class="col-6 col-form-label">Cégjegyzékszám:</label>
+                            <div class="col-6">
+                                <input type="text" id="partner_data-company_registration_number">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="partner_data-bank_account_data" class="col-6 col-form-label">Bankszámlaszám:</label>
+                            <div class="col-6">
+                                <input disabled type="text" id="partner_data-bank_account_data">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col">
+
+                        <div class="form-group row">
+                            <label for="partner_data-seat" class="col-6 col-form-label">Székhely:</label>
+                            <div class="col-6">
+                                <input disabled type="text" id="partner_data-seat">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="partner_data-phone" class="col-6 col-form-label">Telefonszám:</label>
+                            <div class="col-6">
+                                <input disabled type="text" id="partner_data-phone">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="partner_data-email" class="col-6 col-form-label">E-mail:</label>
+                            <div class="col-6">
+                                <input disabled type="text" id="partner_data-email">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="partner_data-website" class="col-6 col-form-label">Weblap:</label>
+                            <div class="col-6">
+                                <input disabled type="text" id="partner_data-website">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="partner_data-administrator" class="col-6 col-form-label">Elsődleges ügyintéző:</label>
+                            <div class="col-6">
+                                <input disabled type="text" id="partner_data-administrator">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Mentés</button>
+
+            </form>
+        </div>
+        <div class="tab-pane" id="relations">
+
+            <!-- Kapcsolattartás -->
+
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#relations-addresses" role="tab" data-toggle="tab">Címek</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#relations-phone" role="tab" data-toggle="tab">Telefon</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#relations-email" role="tab" data-toggle="tab">E-mail</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#relations-website" role="tab" data-toggle="tab">Weboldal</a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="relations-addresses"></div>
+                <div class="tab-pane" id="relations-phone"></div>
+                <div class="tab-pane" id="relations-email"></div>
+                <div class="tab-pane" id="relations-website"></div>
+            </div>
+        </div>
+        <div class="tab-pane" id="bank_accounts"></div>
+        <div class="tab-pane" id="administrators"></div>
+        <div class="tab-pane" id="partner_relations"></div>
+        <div class="tab-pane" id="company"></div>
+    </div>
+
+</div>
+
+    <script src="js/lib/react.js"></script>
+    <script src="js/lib/react-dom.js"></script>
+    <script src="js/lib/create-react-class.js"></script>
+    <script src="js/lib/lodash.js"></script>
+    <script src="js/lib/immutability-helper.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+    <script src="js/listForm.js"></script>
+    <script src="js/forms/addresses.js"></script>
+    <script src="js/forms/phone.js"></script>
+    <script src="js/forms/email.js"></script>
+    <script src="js/forms/website.js"></script>
+    <script src="js/forms/bank_accounts.js"></script>
+    <script src="js/forms/administrators.js"></script>
+    <script src="js/forms/partner_relations.js"></script>
+    <script src="js/forms/company.js"></script>
+
+    <script src="js/main.js"></script>
+
+</body>
+</html>
