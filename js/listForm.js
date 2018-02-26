@@ -21,7 +21,7 @@ const ListFormEdit = createReactClass({
       case 'text':
         input = React.createElement('input', {
           type: 'text',
-          value: value || '',
+          value: (value === null || value === undefined) ? '' : value,
           onChange: function(e) {
             const value = e.target.value
 
@@ -48,7 +48,7 @@ const ListFormEdit = createReactClass({
               return update(state, {
                 item: {
                   [key]: {
-                    $set: value,
+                    $set: Number(value),
                   },
                 },
               })
@@ -135,6 +135,7 @@ const ListForm = createReactClass({
   getInitialState: function() {
     return {
       selectedItemIndex: null,
+      isSelectedUnsaved: false,
       fields: this.props.fields,
       items: this.props.items,
     }
@@ -179,6 +180,9 @@ const ListForm = createReactClass({
         selectedItemIndex: {
           $set: state.items.length,
         },
+        isSelectedUnsaved: {
+          $set: true,
+        },
       })
     })
   },
@@ -194,7 +198,31 @@ const ListForm = createReactClass({
         index: this.state.selectedItemIndex,
         onChange: self.onInputChange,
         onCancel: function() {
-          self.setState({selectedItemIndex: null})
+          self.setState(function(state) {
+            if(state.isSelectedUnsaved) {
+              return update(state, {
+                selectedItemIndex: {
+                  $set: null,
+                },
+                items: {
+                  $splice: [[state.selectedItemIndex, 1]],
+                },
+                isSelectedUnsaved: {
+                  $set: false,
+                },
+              })
+            }
+            else {
+              return update(state, {
+                selectedItemIndex: {
+                  $set: null,
+                },
+                isSelectedUnsaved: {
+                  $set: false,
+                },
+              })
+            }
+          })
         },
         onSave: self.props.onSave,
       })
@@ -210,6 +238,7 @@ const ListForm = createReactClass({
       React.createElement('table', {className: 'table'},
         React.createElement('thead', null,
           React.createElement('tr', null,
+            React.createElement('th', null, 'ID'),
             fields.map(function(field, index) {
               return React.createElement('th', {key: index}, field.title)
             }),
@@ -218,15 +247,22 @@ const ListForm = createReactClass({
         ),
         React.createElement('tbody', null,
           items.map(function(item, index) {
+            if(!item) {
+              console.warn('no item')
+            }
             return React.createElement('tr', {key: index},
+              React.createElement('td', null, item.id),
               fields.map(function(field, index) {
-                let value = null
+                let value
 
                 switch (field.type) {
                   case 'text':
                     value = item[field.key]
                     break
                   case 'select':
+                    if(!masterData[field.key]) {
+                      console.error('Hiányzó masterData!')
+                    }
                     const d = masterData[field.key].find(function(data) {
                       return data.id === Number(item[field.key])
                     })

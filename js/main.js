@@ -29,8 +29,6 @@ function post(url, payload, callback) {
   }
   let ok = true
 
-  console.log(url, payload)
-
   fetch(urlPrefix + url, {
     method: 'POST',
     headers: {
@@ -54,12 +52,18 @@ function post(url, payload, callback) {
       callback(false)
     }
     else {
-      callback(true, data.data.resource)
+      const resource = (data && data.data) ? data.data.resource : null
+
+      callback(true, resource)
     }
   })
 }
 
 function remove(url, callback) {
+  callback = callback || function () {
+  }
+  let ok = true
+
   fetch(urlPrefix + url, {
     method: 'POST',
     headers: {
@@ -68,9 +72,22 @@ function remove(url, callback) {
     },
     body: JSON.stringify({
       _method: 'DELETE',
-    })
-  }).then(function (response) {
-    callback(true, response)
+    }),
+  }).then(function (data) {
+    if (!ok) {
+      if (data.status && data.status.message) {
+        let message = data.status.message
+
+        _.each(data.status.errorBag, function (error) {
+          message += '\n' + error
+        })
+        alert(message)
+      }
+      callback(false)
+    }
+    else {
+      callback(true, data.data.resource)
+    }
   }).catch(function (e) {
     console.log(e)
   })
@@ -83,6 +100,14 @@ if (partnerId) {
   const zipCodesPromise = get('master_data/zip_codes?limit=100')
   const citiesPromise = get('master_data/cities?limit=100')
   const countryCodesPromise = get('master_data/country_codes?limit=100')
+  const personsPromise = get('persons')
+  const positionsPromise = get('master_data?type[]=position&size=100')
+  const competencePromise = get('master_data?type[]=competence&size=100')
+  const emailTypesPromise = get('master_data/email_types')
+  const phoneNumberTypesPromise = get('master_data/phone_number_types')
+  const websiteTypesPromise = get('master_data/website_types')
+  const partnersPromise = get('partners')
+  const partnerRelationTypesPromise = get('master_data/partner_relation_types')
 
   Promise.all([
     partnerPromise,
@@ -91,19 +116,46 @@ if (partnerId) {
     zipCodesPromise,
     citiesPromise,
     countryCodesPromise,
+    personsPromise,
+    positionsPromise,
+    competencePromise,
+    emailTypesPromise,
+    phoneNumberTypesPromise,
+    websiteTypesPromise,
+    partnersPromise,
+    partnerRelationTypesPromise,
   ]).then(function (results) {
     partner = results[0]
-    masterData.country = results[1]
-    masterData.county = results[2]
-    masterData.zip_code = results[3]
-    masterData.city_code = results[4]
-    masterData.country_code = results[5]
+    masterData.country_id = results[1]
+    masterData.county_id = results[2]
+    masterData.zip_code_id = results[3]
+    masterData.city_id = results[4]
+    masterData.country_code_id = results[5]
+    masterData.person_id = results[6].map(function (personProps) {
+      return new Person(personProps)
+    })
+    masterData.position_id = results[7]
+    masterData.competence_id = results[8]
+    masterData.email_type = results[9]
+    masterData.phone_number_type = results[10]
+    masterData.website_type = results[11]
+    masterData.partner_id = results[12].map(function(partner) {
+      return {
+        id: partner.id,
+        name: partner.short_name,
+      }
+    })
+    masterData.partner_relation_type_id = results[13]
 
     document.getElementById('loading').style.display = 'none'
     document.getElementById('content').style.display = 'block'
-    populatePartnerData()
 
-    /*ReactDOM.render(
+    ReactDOM.render(
+      React.createElement(PartnerData),
+      document.getElementById('partner_data'),
+    )
+
+    ReactDOM.render(
       React.createElement(Addresses),
       document.getElementById('relations-addresses')
     )
@@ -121,16 +173,16 @@ if (partnerId) {
     ReactDOM.render(
       React.createElement(Website),
       document.getElementById('relations-website')
-    )*/
+    )
 
     ReactDOM.render(
       React.createElement(BankAccounts),
       document.getElementById('bank_accounts'),
     )
 
-    /*ReactDOM.render(
+    ReactDOM.render(
       React.createElement(Administrators),
-      document.getElementById('administrators')
+      document.getElementById('administrators'),
     )
 
     ReactDOM.render(
@@ -141,52 +193,11 @@ if (partnerId) {
     ReactDOM.render(
       React.createElement(Company),
       document.getElementById('company')
-    )*/
+    )
   })
 }
 else {
   alert('Meg kell adni a partner id-t, pl.: index.html?partner=123')
-}
-
-function populatePartnerData() {
-  const form = document.forms[0]
-  form.elements['partner_data-short_name'].value = partner.short_name
-  form.elements['partner_data-long_name'].value = partner.long_name
-  form.elements['partner_data-tax_number'].value = partner.tax_number
-  form.elements['partner_data-public_tax_number'].value = partner.public_tax_number
-  form.elements['partner_data-company_registration_number'].value = partner.company_registration_number
-}
-
-function onPartnerDataFormSubmit(form) {
-  const payload = {
-    _method: 'PUT',
-  }
-
-  if (form.elements['partner_data-short_name'].value !== '') {
-    payload.short_name = form.elements['partner_data-short_name'].value
-  }
-
-  if (form.elements['partner_data-long_name'].value !== '') {
-    payload.long_name = form.elements['partner_data-long_name'].value
-  }
-
-  if (form.elements['partner_data-tax_number'].value !== '') {
-    payload.tax_number = form.elements['partner_data-tax_number'].value
-  }
-
-  if (form.elements['partner_data-public_tax_number'].value !== '') {
-    payload.public_tax_number = form.elements['partner_data-public_tax_number'].value
-  }
-
-  if (form.elements['partner_data-company_registration_number'].value !== '') {
-    payload.company_registration_number = form.elements['partner_data-company_registration_number'].value
-  }
-
-  post('partners/' + partnerId, payload, function (success) {
-    if (success) {
-      alert('Partner sikeresen mentve.')
-    }
-  })
 }
 
 function uid() {

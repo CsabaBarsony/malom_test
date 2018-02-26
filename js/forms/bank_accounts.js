@@ -13,9 +13,9 @@ const BankAccounts = createReactClass({
 
     get('partner-bank-account-data/' + partnerId)
       .then(function(data) {
-        const items = data.map(function(d) {
+        /*const items = data.map(function(d) {
           return d.bank_account_data
-        })
+        })*/
 
         self.setState(function(state) {
           return update(state, {
@@ -23,7 +23,7 @@ const BankAccounts = createReactClass({
               $set: false,
             },
             items: {
-              $set: items,
+              $set: data,
             },
           })
         })

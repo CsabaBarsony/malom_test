@@ -34,99 +34,7 @@
 
         <!-- Partner adatai -->
 
-        <div class="tab-pane active" id="partner_data">
-            <form class="form-horizontal" onsubmit="event.preventDefault(); onPartnerDataFormSubmit(this);">
-
-                <div class="row">
-                    <div class="col">
-                        <div class="form-group row">
-                            <label for="partner_data-short_name" class="col-6 col-form-label">Partner rövid neve:</label>
-                            <div class="col-6">
-                                <input type="text" id="partner_data-short_name">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="partner_data-long_name" class="col-6 col-form-label">Partner hosszú neve:</label>
-                            <div class="col-6">
-                                <input type="text" id="partner_data-long_name">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="partner_data-tax_number" class="col-6 col-form-label">Adószám:</label>
-                            <div class="col-6">
-                                <input type="text" id="partner_data-tax_number">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="partner_data-public_tax_number" class="col-6 col-form-label">Közösségi adószám:</label>
-                            <div class="col-6">
-                                <input type="text" id="partner_data-public_tax_number">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="partner_data-company_registration_number" class="col-6 col-form-label">Cégjegyzékszám:</label>
-                            <div class="col-6">
-                                <input type="text" id="partner_data-company_registration_number">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="partner_data-bank_account_data" class="col-6 col-form-label">Bankszámlaszám:</label>
-                            <div class="col-6">
-                                <input disabled type="text" id="partner_data-bank_account_data">
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="col">
-
-                        <div class="form-group row">
-                            <label for="partner_data-seat" class="col-6 col-form-label">Székhely:</label>
-                            <div class="col-6">
-                                <input disabled type="text" id="partner_data-seat">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="partner_data-phone" class="col-6 col-form-label">Telefonszám:</label>
-                            <div class="col-6">
-                                <input disabled type="text" id="partner_data-phone">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="partner_data-email" class="col-6 col-form-label">E-mail:</label>
-                            <div class="col-6">
-                                <input disabled type="text" id="partner_data-email">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="partner_data-website" class="col-6 col-form-label">Weblap:</label>
-                            <div class="col-6">
-                                <input disabled type="text" id="partner_data-website">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="partner_data-administrator" class="col-6 col-form-label">Elsődleges ügyintéző:</label>
-                            <div class="col-6">
-                                <input disabled type="text" id="partner_data-administrator">
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Mentés</button>
-
-            </form>
-        </div>
+        <div class="tab-pane active" id="partner_data"></div>
         <div class="tab-pane" id="relations">
 
             <!-- Kapcsolattartás -->
@@ -171,7 +79,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 
+    <script src="js/classes/person.js"></script>
     <script src="js/listForm.js"></script>
+    <script src="js/forms/partner_data.js"></script>
     <script src="js/forms/addresses.js"></script>
     <script src="js/forms/phone.js"></script>
     <script src="js/forms/email.js"></script>
