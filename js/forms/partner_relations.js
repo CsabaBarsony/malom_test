@@ -1,9 +1,50 @@
 const PartnerRelations = createReactClass({
   getInitialState: function() {
     return {
-      loading: false,
+      loading: true,
       items: [],
     }
+  },
+
+  getItems: function() {
+    const self = this
+
+    this.setState({loading: true})
+
+    get('partner-connections/' + partnerId)
+      .then(function(data) {
+        const items = data.map(function(d) {
+          const result = {
+            id: d.id,
+
+            parent_id: d.parent_id,
+            partner_id: d.child_id,
+            partner_relation_type_id: d.connection_types.length ? d.connection_types.map(function(c) {
+              return c.connection_type_master_id
+            }) : [],
+          }
+
+          return result
+        })
+
+        self.setState(function(state) {
+          return update(state, {
+            loading: {
+              $set: false,
+            },
+            items: {
+              $set: items,
+            },
+          })
+        })
+      })
+      .catch(function(e) {
+        console.log(e)
+      })
+  },
+
+  componentDidMount: function() {
+    this.getItems()
   },
 
   render: function() {
@@ -25,23 +66,28 @@ const PartnerRelations = createReactClass({
         })
 
         if(item.id) {
-          debugger
-          put(`partner-connections/${item.id}`, payload, callback)
+          const payload = {
+            connection_type_ids: item.partner_relation_type_id,
+          }
+
+          put(`partner-connections/${item.child_id}`, payload, function(success) {
+            console.log(success)
+          })
         }
         else {
           const payload = {
-            parent_id: partnerId,
+            parent_id: Number(partnerId),
             child_id: item.partner_id,
             connection_type_ids: item.partner_relation_type_id,
           }
 
           post('partner-connections', payload, function(success) {
-            debugger
+            console.log(success)
           })
         }
       },
       onRemove: function(id) {
-        remove(`partner-contact-data`, function(success) {
+        remove(`partner-connections`, function(success) {
           if(success) {
             self.getItems()
           }

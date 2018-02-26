@@ -2,8 +2,8 @@ const Company = createReactClass({
   getInitialState: function() {
     return {
       loading: false,
-      prefix: '',
-      isCompany: false,
+      prefix: partner.partner.prefix,
+      isCompany: partner.partner.isCompany,
     }
   },
 

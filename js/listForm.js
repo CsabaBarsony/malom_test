@@ -341,6 +341,18 @@ const ListForm = createReactClass({
                   case 'checkbox':
                     value = item[field.key] ? 'igen' : 'nem'
                     break
+                  case 'multiselect':
+                    const options = masterData[field.key]
+                    let valuesString = ''
+                    _.each(item[field.key], function(value) {
+                      return options.find(function(o) {
+                        if(o.id === value) {
+                          valuesString += o.name + ' '
+                        }
+                      })
+                    })
+                    value = valuesString
+                    break
                 }
 
                 return React.createElement('td', {key: index}, value)

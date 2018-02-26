@@ -118,7 +118,7 @@ const Addresses = createReactClass({
         }
       },
       onRemove: function(id) {
-        remove(`partner-addresses/${partnerId}/${id}`, function(success) {
+        remove(`partner-addresses/${partnerId}/${id}`, null, function(success) {
           if(success) {
             self.getItems()
           }

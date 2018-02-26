@@ -59,7 +59,9 @@ function post(url, payload, callback) {
   })
 }
 
-function remove(url, callback) {
+function remove(url, payload, callback) {
+  payload = payload || {}
+  payload._method = 'DELETE'
   callback = callback || function () {
   }
   let ok = true
@@ -70,9 +72,7 @@ function remove(url, callback) {
       'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      _method: 'DELETE',
-    }),
+    body: JSON.stringify(payload),
   }).then(function (data) {
     if (!ok) {
       if (data.status && data.status.message) {
@@ -108,6 +108,7 @@ if (partnerId) {
   const websiteTypesPromise = get('master_data/website_types')
   const partnersPromise = get('partners')
   const partnerRelationTypesPromise = get('master_data/partner_relation_types')
+  const partnerConnectionsPromise = get('partner-connections/' + partnerId)
 
   Promise.all([
     partnerPromise,
@@ -124,8 +125,10 @@ if (partnerId) {
     websiteTypesPromise,
     partnersPromise,
     partnerRelationTypesPromise,
+    partnerConnectionsPromise,
   ]).then(function (results) {
     partner = results[0]
+    partner.connections = results[14]
     masterData.country_id = results[1]
     masterData.county_id = results[2]
     masterData.zip_code_id = results[3]

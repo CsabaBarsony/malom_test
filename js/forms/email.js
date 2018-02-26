@@ -103,7 +103,7 @@ const Email = createReactClass({
         }
       },
       onRemove: function(id) {
-        remove(`partner-contact-data`, function(success) {
+        remove(`partner-contact-data`, null, function(success) {
           if(success) {
             self.getItems()
           }

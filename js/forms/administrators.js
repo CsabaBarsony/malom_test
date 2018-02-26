@@ -99,7 +99,7 @@ const Administrators = createReactClass({
         }
       },
       onRemove: function(id) {
-        remove(`partner-administrators/${partnerId}/${id}`, function(success) {
+        remove(`partner-administrators/${partnerId}/${id}`, null, function(success) {
           if(success) {
             self.getItems()
           }

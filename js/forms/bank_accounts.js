@@ -83,7 +83,7 @@ const BankAccounts = createReactClass({
         }
       },
       onRemove: function(id) {
-        remove(`partner-bank-account-data/${partnerId}/${id}`, function(success) {
+        remove(`partner-bank-account-data/${partnerId}/${id}`, null, function(success) {
           if(success) {
             self.getItems()
           }
