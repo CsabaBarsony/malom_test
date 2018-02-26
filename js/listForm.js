@@ -1,3 +1,40 @@
+const MultiSelect = createReactClass({
+  getInitialState: function() {
+    return {
+      values: this.props.values || [],
+    }
+  },
+
+  render: function() {
+    const self = this
+    const options = this.props.options
+
+    return React.createElement('select', {
+        multiple: true,
+        onChange: function(e) {
+          const values = []
+          _.each(e.target.options, function(o) {
+            values.push(Number(o.value))
+          })
+          self.setState(function(state) {
+            return update(state, {
+              values: {
+                $set: values,
+              },
+            })
+          })
+        }
+      },
+      options.map(function(option, index) {
+        return React.createElement('option', {
+          key: index,
+          value: option.id
+        }, option.name)
+      })
+    )
+  },
+})
+
 function ListFormField(type, key, title) {
   this.type = type
   this.key = key
@@ -85,6 +122,35 @@ const ListFormEdit = createReactClass({
         )
         break
 
+      case 'multiselect':
+        const options = masterData[key]
+        input = React.createElement('select', {
+            multiple: true,
+            onChange: function(e) {
+              const values = []
+              _.each(e.target.options, function(option) {
+                option.selected && values.push(Number(option.value))
+              })
+              self.setState(function(state) {
+                return update(state, {
+                  item: {
+                    [key]: {
+                      $set: values,
+                    },
+                  },
+                })
+              })
+            }
+          },
+          options.map(function(option, index) {
+            return React.createElement('option', {
+              key: index,
+              value: option.id
+            }, option.name)
+          })
+        )
+        break
+
       default:
         console.warn('Nincs, vagy helytelen input type!')
         break
@@ -166,6 +232,9 @@ const ListForm = createReactClass({
           break
         case 'checkbox':
           value = false
+          break
+        case 'multiselect':
+          value = []
           break
       }
 

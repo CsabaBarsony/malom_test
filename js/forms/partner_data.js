@@ -104,7 +104,7 @@ const PartnerData = createReactClass({
           renderDisplay('Székhely', displays.area),
           renderDisplay('Telefonszám', displays.phone),
           renderDisplay('E-mail', displays.email),
-          renderDisplay('Weblab', displays.website),
+          renderDisplay('Weblap', displays.website),
           renderDisplay('Elsődleges ügyintéző', null),
         ),
       ),

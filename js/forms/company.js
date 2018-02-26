@@ -67,6 +67,7 @@ const Company = createReactClass({
         )
       ),
       React.createElement('button', {
+        className: 'btn',
         onClick: function() {
           self.setState(function(state) {
             return update(state, {
