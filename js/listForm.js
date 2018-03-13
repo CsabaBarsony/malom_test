@@ -35,10 +35,11 @@ const MultiSelect = createReactClass({
   },
 })
 
-function ListFormField(type, key, title) {
+function ListFormField(type, key, title, options) {
   this.type = type
   this.key = key
   this.title = title
+  this.options = options
 }
 
 const ListFormEdit = createReactClass({
@@ -54,6 +55,10 @@ const ListFormEdit = createReactClass({
     let input
 
     switch (type) {
+
+      case 'label':
+        input = React.createElement('span', null, `${key}: ${value}`)
+        break
 
       case 'text':
         input = React.createElement('input', {
@@ -125,30 +130,51 @@ const ListFormEdit = createReactClass({
       case 'multiselect':
         const options = masterData[key]
         input = React.createElement('select', {
-            multiple: true,
-            onChange: function(e) {
-              const values = []
-              _.each(e.target.options, function(option) {
-                option.selected && values.push(Number(option.value))
-              })
-              self.setState(function(state) {
-                return update(state, {
-                  item: {
-                    [key]: {
-                      $set: values,
-                    },
+          multiple: true,
+          value: value,
+          onChange: function(e) {
+            const values = []
+            _.each(e.target.options, function(option) {
+              option.selected && values.push(Number(option.value))
+            })
+            self.setState(function(state) {
+              return update(state, {
+                item: {
+                  [key]: {
+                    $set: values,
                   },
-                })
+                },
               })
-            }
+            })
+          }
           },
           options.map(function(option, index) {
             return React.createElement('option', {
               key: index,
-              value: option.id
+              value: option.id,
             }, option.name)
           })
         )
+        break
+
+      case 'date':
+        input = React.createElement('input', {
+          type: 'datetime-local',
+          value: (value === null || value === undefined) ? '' : moment(value).format('YYYY-MM-DDThh:mm:ss'),
+          onChange: function(e) {
+            const value = e.target.value
+
+            self.setState(function(state) {
+              return update(state, {
+                item: {
+                  [key]: {
+                    $set: value,
+                  },
+                },
+              })
+            })
+          },
+        })
         break
 
       default:
@@ -236,6 +262,9 @@ const ListForm = createReactClass({
         case 'multiselect':
           value = []
           break
+        default:
+          value = ''
+          break
       }
 
       newItem[field.key] = value
@@ -319,12 +348,24 @@ const ListForm = createReactClass({
             if(!item) {
               console.warn('no item')
             }
+            const details = (self.props.options && self.props.options.details) && React.createElement(
+              'button',
+              {
+                className: 'btn',
+                onClick: function() {alert('majom vagy')}
+              },
+              'Részletek',
+            )
+
             return React.createElement('tr', {key: index},
               React.createElement('td', null, item.id),
               fields.map(function(field, index) {
                 let value
 
                 switch (field.type) {
+                  case 'label':
+                    value = item[field.key]
+                    break
                   case 'text':
                     value = item[field.key]
                     break
@@ -353,6 +394,9 @@ const ListForm = createReactClass({
                     })
                     value = valuesString
                     break
+                  case 'date':
+                    value = item[field.key]
+                    break
                 }
 
                 return React.createElement('td', {key: index}, value)
@@ -370,6 +414,7 @@ const ListForm = createReactClass({
                     self.props.onRemove(item.id)
                   },
                 }, 'Törlés'),
+                details,
               ) : null
             )
           }),
@@ -378,5 +423,11 @@ const ListForm = createReactClass({
       addItemButton,
       listFormEdit,
     )
-  }
+  },
+})
+
+const DetailsModal = createReactClass({
+  render: function() {
+    return '<div>majooom</div>'
+  },
 })

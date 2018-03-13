@@ -16,7 +16,7 @@ const Administrators = createReactClass({
         const items = data.map(function(d) {
           const result = {
             id: d.id,
-            // person_id: d.person.id,
+            person_id: d.person.id,
             position_id: d.formatted_partner_meta_data.position ? d.formatted_partner_meta_data.position.id : null,
             competence_id: d.formatted_partner_meta_data.competence ? d.formatted_partner_meta_data.competence.id : null,
             country_code_id: d.formatted_partner_meta_data.phone_country_code ? d.formatted_partner_meta_data.phone_country_code.id : null,
@@ -52,7 +52,7 @@ const Administrators = createReactClass({
 
     return this.state.loading ? React.createElement('div', null, 'Kérem, várjon!') : React.createElement(ListForm, {
       fields: [
-        // new ListFormField('select', 'person_id', 'Név'),
+        new ListFormField('select', 'person_id', 'Név'),
         new ListFormField('select', 'position_id', 'Beosztás'),
         new ListFormField('select', 'competence_id', 'Ügyterület'),
         new ListFormField('select', 'country_code_id', 'Ország előhívó'),
@@ -70,7 +70,17 @@ const Administrators = createReactClass({
           })
         })
 
-        function callback(success, item) {
+        function callback(success, data) {
+          const item = {
+            id: data.id,
+            person_id: data.person.id,
+            position_id: data.formatted_partner_meta_data.position ? data.formatted_partner_meta_data.position.id : null,
+            competence_id: data.formatted_partner_meta_data.competence ? data.formatted_partner_meta_data.competence.id : null,
+            country_code_id: data.formatted_partner_meta_data.phone_country_code ? data.formatted_partner_meta_data.phone_country_code.id : null,
+            phone: data.phone_number,
+            email: data.email_address,
+          }
+
           if(success) {
             self.setState(function(state) {
               return update(state, {
@@ -99,7 +109,7 @@ const Administrators = createReactClass({
         }
       },
       onRemove: function(id) {
-        remove(`partner-administrators/${partnerId}/${id}`, null, function(success) {
+        remove(`partner-administrators/${id}`, null, function(success) {
           if(success) {
             self.getItems()
           }

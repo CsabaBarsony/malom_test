@@ -6,6 +6,30 @@ const Addresses = createReactClass({
     }
   },
 
+  generateItem: function(item) {
+    return {
+      id: item.id,
+
+      area: item.area,
+      message: item.message,
+      state: !!item.state,
+      is_primary: !!item.is_primary,
+      country_id: item.formatted_master_data.country ? item.formatted_master_data.country[0].id : null,
+      county_id: item.formatted_master_data.county ? item.formatted_master_data.county[0].id : null,
+      city_id: item.formatted_master_data.city ? item.formatted_master_data.city[0].id : null,
+      zip_code_id: item.formatted_master_data.zip_code ? item.formatted_master_data.zip_code[0].id : null,
+    }
+  },
+
+  generateItems: function(items) {
+    const self = this
+
+    return items.map(function(item) {
+      return self.generateItem(item)
+    })
+
+  },
+
   getItems: function() {
     const self = this
 
@@ -13,23 +37,7 @@ const Addresses = createReactClass({
 
     get('partner-addresses/' + partnerId)
       .then(function(data) {
-        const items = data.map(function(d) {
-          const result = {
-            id: d.id,
-
-            area: d.area,
-            message: d.message,
-            state: d.state,
-            is_primary: d.is_primary,
-            country_id: d.formatted_master_data.country ? d.formatted_master_data.country[0].id : null,
-            county_id: d.formatted_master_data.county ? d.formatted_master_data.county[0].id : null,
-            city_id: d.formatted_master_data.city ? d.formatted_master_data.city[0].id : null,
-            zip_code_id: d.formatted_master_data.zip_code ? d.formatted_master_data.zip_code[0].id : null,
-          }
-
-          return result
-        })
-
+        const items = self.generateItems(data)
         self.setState(function(state) {
           return update(state, {
             loading: {
@@ -83,7 +91,7 @@ const Addresses = createReactClass({
                 },
                 items: {
                   [index]: {
-                    $set: item,
+                    $set: self.generateItem(item),
                   },
                 },
               })
@@ -118,11 +126,23 @@ const Addresses = createReactClass({
         }
       },
       onRemove: function(id) {
-        remove(`partner-addresses/${partnerId}/${id}`, null, function(success) {
-          if(success) {
-            self.getItems()
-          }
-          else {
+        self.setState(function(state) {
+          update(state, {
+            loading: {
+              $set: true,
+            },
+          })
+        })
+        remove(`partner-addresses/${id}/${partnerId}`, null, function(success) {
+          self.setState(function(state) {
+            update(state, {
+              loading: {
+                $set: false,
+              },
+            })
+          })
+
+          if(!success) {
             console.error('Valami baj történt.')
           }
         })

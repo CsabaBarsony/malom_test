@@ -87,11 +87,8 @@ const PartnerRelations = createReactClass({
         }
       },
       onRemove: function(id) {
-        remove(`partner-connections`, function(success) {
-          if(success) {
-            self.getItems()
-          }
-          else {
+        remove(`partner-connections/${id}`, null, function(success) {
+          if(!success) {
             console.error('Valami baj történt.')
           }
         })

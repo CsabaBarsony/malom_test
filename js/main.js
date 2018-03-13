@@ -1,4 +1,6 @@
-const partnerId = new URLSearchParams(window.location.search).get('partner')
+const partnerId = new URLSearchParams(window.location.search).get('partner_id')
+const companyId = new URLSearchParams(window.location.search).get('company_id')
+
 let partner = {}
 const masterData = {}
 const urlPrefix = 'http://dimpropbackend_test.skylc.local/api/'
@@ -86,7 +88,7 @@ function remove(url, payload, callback) {
       callback(false)
     }
     else {
-      callback(true, data.data.resource)
+      callback(true)
     }
   }).catch(function (e) {
     console.log(e)
@@ -109,6 +111,11 @@ if (partnerId) {
   const partnersPromise = get('partners')
   const partnerRelationTypesPromise = get('master_data/partner_relation_types')
   const partnerConnectionsPromise = get('partner-connections/' + partnerId)
+  const bankPromise = get('master_data/banks')
+  const currencyPromise = get('master_data/currencies')
+  const arrivalMethodPromise = get('master_data?type=arrival_method')
+  const topicPromise = get('master_data?type=topic')
+  const statusPromise = get('master_data?type=status')
 
   Promise.all([
     partnerPromise,
@@ -126,6 +133,11 @@ if (partnerId) {
     partnersPromise,
     partnerRelationTypesPromise,
     partnerConnectionsPromise,
+    bankPromise,
+    currencyPromise,
+    arrivalMethodPromise,
+    topicPromise,
+    statusPromise,
   ]).then(function (results) {
     partner = results[0]
     partner.connections = results[14]
@@ -148,7 +160,18 @@ if (partnerId) {
         name: partner.short_name,
       }
     })
+    masterData.recipient_id = results[12].map(function(partner) {
+      return {
+        id: partner.id,
+        name: partner.short_name,
+      }
+    })
     masterData.partner_relation_type_id = results[13]
+    masterData.bank_name_id = results[15]
+    masterData.currency_type_id = results[16]
+    masterData.arrival_method_id = results[17]
+    masterData.topic_id = results[18]
+    masterData.status_id = results[19]
 
     document.getElementById('loading').style.display = 'none'
     document.getElementById('content').style.display = 'block'
@@ -197,10 +220,15 @@ if (partnerId) {
       React.createElement(Company),
       document.getElementById('company')
     )
+
+    ReactDOM.render(
+      React.createElement(Filing),
+      document.getElementById('filing')
+    )
   })
 }
 else {
-  alert('Meg kell adni a partner id-t, pl.: index.html?partner=123')
+  alert('Meg kell adni a partner id-t, pl.: index.html?partner_id=123')
 }
 
 function uid() {

@@ -18,8 +18,8 @@ const Website = createReactClass({
             id: d.id,
 
             value: d.value,
-            website_type: d.type_id,
-            is_primary_type_item: d.is_primary_type_item,
+            type_attribute: d.type_attribute,
+            is_primary_type_item: !!d.is_primary_type_item,
           }
 
           return result
@@ -46,10 +46,12 @@ const Website = createReactClass({
   },
 
   render: function() {
-    return React.createElement(ListForm, {
+    const self = this
+
+    return this.state.loading ? React.createElement('div', null, 'Kérem, várjon!') : React.createElement(ListForm, {
       fields: [
         new ListFormField('text', 'value', 'Weboldal'),
-        new ListFormField('text', 'website_type', 'Típus'),
+        new ListFormField('text', 'type_attribute', 'Típus'),
         new ListFormField('checkbox', 'is_primary_type_item', 'Elsődleges'),
       ],
       items: this.state.items,
@@ -83,29 +85,51 @@ const Website = createReactClass({
           }
         }
 
-        const payload = {
-          partner_id: Number(partnerId),
-          contact_data: {
-            contact_data_type: 'website',
-            value: item.value,
-            type_id: item.website_type,
-            is_primary_type_item: item.is_primary_type_item,
-          }
-        }
-
         if(item.id) {
+          const payload = {
+            partner_id: Number(partnerId),
+            contact_data: {
+              contact_data_type: 'website',
+              value: item.value,
+              type_attribute: item.type_attribute || '',
+              is_primary_type_item: !!item.is_primary_type_item,
+            }
+          }
+
           put(`partner-contact-data/${item.id}`, payload, callback)
         }
         else {
+          const payload = {
+            partner_id: Number(partnerId),
+            contact_data: {
+              contact_data_type: 'website',
+              value: item.value,
+              type_attribute: item.type_attribute || '',
+              is_primary_type_item: !!item.is_primary_type_item,
+            }
+          }
+
           post('partner-contact-data', payload, callback)
         }
       },
       onRemove: function(id) {
-        remove(`partner-contact-data`, null, function(success) {
-          if(success) {
-            self.getItems()
-          }
-          else {
+        self.setState(function(state) {
+          update(state, {
+            loading: {
+              $set: true,
+            },
+          })
+        })
+        remove(`partner-contact-data/${id}/${partnerId}`, null, function(success) {
+          self.setState(function(state) {
+            update(state, {
+              loading: {
+                $set: false,
+              },
+            })
+          })
+
+          if(!success) {
             console.error('Valami baj történt.')
           }
         })

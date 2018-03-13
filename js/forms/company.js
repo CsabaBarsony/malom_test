@@ -3,7 +3,7 @@ const Company = createReactClass({
     return {
       loading: false,
       prefix: partner.partner.prefix,
-      isCompany: partner.partner.isCompany,
+      isCompany: !!partner.partner.company,
     }
   },
 

@@ -18,8 +18,8 @@ const Phone = createReactClass({
             id: d.id,
 
             value: d.value,
-            phone_number_type: d.type_id,
-            is_primary_type_item: d.is_primary_type_item,
+            type_attribute: d.type_attribute,
+            is_primary_type_item: !!d.is_primary_type_item,
             country_code_id: d.formatted_master_data.country_code ? d.formatted_master_data.country_code[0].id : null,
           }
 
@@ -53,7 +53,7 @@ const Phone = createReactClass({
       fields: [
         new ListFormField('text', 'value', 'Telefonszám'),
         new ListFormField('select', 'country_code_id', 'Előhívó'),
-        new ListFormField('select', 'phone_number_type', 'Típus'),
+        new ListFormField('text', 'type_attribute', 'Típus'),
         new ListFormField('checkbox', 'is_primary_type_item', 'Elsődleges'),
       ],
       items: this.state.items,
@@ -66,8 +66,17 @@ const Phone = createReactClass({
           })
         })
 
-        function callback(success, item) {
+        function callback(success, data) {
           if(success) {
+            const item = {
+              id: data.id,
+
+              value: data.value,
+              type_attribute: data.type_attribute,
+              is_primary_type_item: !!data.is_primary_type_item,
+              country_code_id: data.formatted_master_data.country_code ? data.formatted_master_data.country_code[0].id : null,
+            }
+
             self.setState(function(state) {
               return update(state, {
                 loading: {
@@ -87,30 +96,55 @@ const Phone = createReactClass({
           }
         }
 
-        const payload = {
-          partner_id: Number(partnerId),
-          contact_data: {
-            contact_data_type: 'phone',
-            value: item.value,
-            type_id: item.phone_number_type,
-            is_primary_type_item: item.is_primary_type_item,
-            country_code_id: item.country_code_id,
-          }
-        }
-
         if(item.id) {
+          const payload = {
+            partner_id: Number(partnerId),
+            contact_data: {
+              contact_data_type: 'phone',
+              value: item.value,
+              type_attribute: item.type_attribute,
+              is_primary_type_item: !!item.is_primary_type_item,
+              country_code_id: item.country_code_id,
+              phone_number_type_id: item.phone_number_type,
+              // ide jön majd a master_data.country_code_id
+            }
+          }
+
           put(`partner-contact-data/${item.id}`, payload, callback)
         }
         else {
+          const payload = {
+            partner_id: Number(partnerId),
+            contact_data: {
+              contact_data_type: 'phone',
+              value: item.value,
+              type_attribute: item.type_attribute,
+              is_primary_type_item: !!item.is_primary_type_item,
+              country_code_id: item.country_code_id,
+            }
+          }
+
           post('partner-contact-data', payload, callback)
         }
       },
       onRemove: function(id) {
-        remove(`partner-contact-data`, null, function(success) {
-          if(success) {
-            self.getItems()
-          }
-          else {
+        self.setState(function(state) {
+          update(state, {
+            loading: {
+              $set: true,
+            },
+          })
+        })
+        remove(`partner-contact-data/${id}/${partnerId}`, null, function(success) {
+          self.setState(function(state) {
+            update(state, {
+              loading: {
+                $set: false,
+              },
+            })
+          })
+
+          if(!success) {
             console.error('Valami baj történt.')
           }
         })

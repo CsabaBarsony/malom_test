@@ -1,0 +1,14 @@
+{
+  "sender_partner_id": 1,
+  "recipient_partner_id": 3,
+  "date": "2018-03-10 10:10:00",
+  "deadline": "2018-03-24 10:10:00",
+  "message": "megjx",
+  "subject": "tárgyx",
+  "arrival_method_master_data_id": 8130,
+  "state_master_data_id": 7758,
+  "topic_master_data_id": 8147,
+  "registration_id": "DFDASFA18B-1",
+  "id": 2,
+  "_method": "PUT"
+}

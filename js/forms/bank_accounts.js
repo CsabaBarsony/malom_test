@@ -13,9 +13,16 @@ const BankAccounts = createReactClass({
 
     get('partner-bank-account-data/' + partnerId)
       .then(function(data) {
-        /*const items = data.map(function(d) {
-          return d.bank_account_data
-        })*/
+        const items = data.map(function(bank) {
+          return {
+            id: bank.id,
+            account_number: bank.account_number,
+            swift_code: bank.swift_code,
+            iban_code: bank.iban_code,
+            bank_name_id: bank.formatted_master_data.bank ? bank.formatted_master_data.bank[0].id : null,
+            currency_type_id: bank.formatted_master_data.currency ? bank.formatted_master_data.currency[0].id : null,
+          }
+        })
 
         self.setState(function(state) {
           return update(state, {
@@ -23,7 +30,7 @@ const BankAccounts = createReactClass({
               $set: false,
             },
             items: {
-              $set: data,
+              $set: items,
             },
           })
         })
@@ -45,6 +52,8 @@ const BankAccounts = createReactClass({
         new ListFormField('text', 'account_number', 'Bankszámlaszám'),
         new ListFormField('text', 'swift_code', 'Swift'),
         new ListFormField('text', 'iban_code', 'IBAN'),
+        new ListFormField('select', 'bank_name_id', 'Bank'),
+        new ListFormField('select', 'currency_type_id', 'Pénznem'),
       ],
       items: this.state.items,
       onSave: function(item, index) {
@@ -55,7 +64,16 @@ const BankAccounts = createReactClass({
             },
           })
         })
-        function callback(success, item) {
+        function callback(success, data) {
+          const item = {
+            id: data.id,
+            account_number: data.account_number,
+            swift_code: data.swift_code,
+            iban_code: data.iban_code,
+            bank_name_id: data.formatted_master_data.bank ? data.formatted_master_data.bank[0].id : null,
+            currency_type_id: data.formatted_master_data.currency ? data.formatted_master_data.currency[0].id : null,
+          }
+
           if(success) {
             self.setState(function(state) {
               return update(state, {
