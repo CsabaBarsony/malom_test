@@ -1,0 +1,20 @@
+.modal{
+    display: block !important; /* I added this to see the modal, you don't need this */
+}
+
+/* Important part */
+.modal-dialog{
+    overflow-y: initial !important
+}
+.modal-body{
+    height: 700px;
+    overflow-y: auto;
+}
+
+.filing-links .container > .row > .col:nth-child(1) {
+    text-align: right;
+}
+
+.filing-links .container > .row > .col:nth-child(2) {
+    text-align: left;
+}

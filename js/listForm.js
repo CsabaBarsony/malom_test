@@ -230,6 +230,8 @@ const ListForm = createReactClass({
       isSelectedUnsaved: false,
       fields: this.props.fields,
       items: this.props.items,
+      isDetailsModalVisible: false,
+      detailsId: null,
     }
   },
 
@@ -332,7 +334,24 @@ const ListForm = createReactClass({
 
     if(this.state.loading) return React.createElement('div', null, 'Kérem, várjon egy pillanatot!')
 
+    const details = (this.props.options && this.props.options.details) ? this.props.options.details : null
+
+    const detailsModal = details && this.state.isDetailsModalVisible ?
+      React.createElement(DetailsModal, {
+        onClose: function() {
+          self.setState({
+            isDetailsModalVisible: false,
+            detailsId: null,
+          })
+        },
+        content: function() {return details.content},
+        id: self.state.detailsId,
+        label: details.label,
+      })
+      : null
+
     return React.createElement('div', null,
+      detailsModal,
       React.createElement('table', {className: 'table'},
         React.createElement('thead', null,
           React.createElement('tr', null,
@@ -352,7 +371,12 @@ const ListForm = createReactClass({
               'button',
               {
                 className: 'btn',
-                onClick: function() {alert('majom vagy')}
+                onClick: function() {
+                  self.setState({
+                    isDetailsModalVisible: true,
+                    detailsId: item.id,
+                  })
+                }
               },
               'Részletek',
             )
@@ -428,6 +452,26 @@ const ListForm = createReactClass({
 
 const DetailsModal = createReactClass({
   render: function() {
-    return '<div>majooom</div>'
+    const self = this
+
+    return React.createElement('div', {className: 'modal', style: {display: 'block'}},
+      React.createElement('div', {className: 'modal-dialog', style: {maxWidth: '800px'}},
+        React.createElement('div', {className: 'modal-content'},
+          React.createElement('div', {className: 'modal-header'},
+            React.createElement('div', {className: 'modal-title'},
+              React.createElement('h5', null, self.props.label),
+              React.createElement('button', {className: 'btn', onClick: self.props.onClose}, 'Bezár'),
+            ),
+          ),
+          React.createElement('div', {className: 'modal-body'},
+            React.createElement(self.props.content(), {id: self.props.id})
+          ),
+        ),
+      ),
+    )
   },
 })
+
+DetailsModal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+}
